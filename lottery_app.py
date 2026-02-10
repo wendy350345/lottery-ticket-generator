@@ -13,7 +13,7 @@ with st.sidebar:
     font_mode = st.radio("字體來源", ["思源黑體", "上傳字體檔 (.ttf/.otf)"])
     uploaded_font = st.file_uploader("上傳字體檔案", type=["ttf", "ttc", "otf"]) if font_mode == "上傳字體檔 (.ttf/.otf)" else None
     
-    fixed_text = st.text_input("固定標題", "2026 年度尾牙")
+    fixed_text = st.text_input("固定標題", "填入固定標題文字")
     fixed_size = st.slider("標題大小", 10, 300, 60) # 增大滑桿範圍適應高解析度
     fixed_y = st.slider("標題垂直位置 (%)", 0, 100, 15)
     
@@ -30,7 +30,7 @@ def load_my_font(size):
     
     # 否則使用專案資料夾內的思源黑體
     # 這裡請確認檔案名稱與你下載的一致
-    local_font_path = "SOURCEHANSANSTC-REGULAR.otf" 
+    local_font_path = "SOURCEHANSANSTC-REGULAR.OTF" 
     
     if os.path.exists(local_font_path):
         return ImageFont.truetype(local_font_path, size)
@@ -116,4 +116,5 @@ if bg_file and data_file:
         pages[0].save(pdf_out, format="PDF", save_all=True, append_images=pages[1:])
         st.success("✅ 完成！PDF 字體大小現在應該與預覽完全一致。")
         st.download_button("📥 下載 PDF", data=pdf_out.getvalue(), file_name="tickets_final.pdf")
+
 
