@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 import io
+import os
 
 st.set_page_config(page_title="萬用抽獎券生成器 V6", layout="wide")
 st.title("🎟️ 萬用抽獎券生成器 V6 (解析度同步修正版)")
@@ -9,7 +10,7 @@ st.title("🎟️ 萬用抽獎券生成器 V6 (解析度同步修正版)")
 # --- 側邊欄設定 ---
 with st.sidebar:
     st.header("⚙️ 樣式設定")
-    font_mode = st.radio("字體來源", ["微軟正黑體", "上傳字體檔 (.ttf/.otf)"])
+    font_mode = st.radio("字體來源", ["思源黑體", "上傳字體檔 (.ttf/.otf)"])
     uploaded_font = st.file_uploader("上傳字體檔案", type=["ttf", "ttc", "otf"]) if font_mode == "上傳字體檔 (.ttf/.otf)" else None
     
     fixed_text = st.text_input("固定標題", "2026 年度尾牙")
@@ -21,14 +22,25 @@ with st.sidebar:
     text_color = st.color_picker("文字顏色", "#000000")
     line_spacing = st.slider("行間距", 0, 100, 20)
 
-# 工具函數：載入字體
+# 工具函數：動態載入字體
 def load_my_font(size):
+    # 如果使用者有上傳字體，優先使用上傳的
     if font_mode == "上傳字體檔 (.ttf/.otf)" and uploaded_font is not None:
         return ImageFont.truetype(io.BytesIO(uploaded_font.getvalue()), size)
-    try:
-        return ImageFont.truetype("C:\\Windows\\Fonts\\msjh.ttc", size)
-    except:
-        return ImageFont.load_default()
+    
+    # 否則使用專案資料夾內的思源黑體
+    # 這裡請確認檔案名稱與你下載的一致
+    local_font_path = "SOURCEHANSANSTC-REGULAR.otf" 
+    
+    if os.path.exists(local_font_path):
+        return ImageFont.truetype(local_font_path, size)
+    else:
+        # 如果本機也沒有，才回退到微軟正黑體或預設字體
+        try:
+            return ImageFont.truetype("C:\\Windows\\Fonts\\msjh.ttc", size)
+        except:
+            st.warning("找不到思源黑體或系統字體，使用預設字體（中文可能亂碼）")
+            return ImageFont.load_default()
 
 # --- 檔案上傳 ---
 col1, col2 = st.columns(2)
@@ -104,3 +116,4 @@ if bg_file and data_file:
         pages[0].save(pdf_out, format="PDF", save_all=True, append_images=pages[1:])
         st.success("✅ 完成！PDF 字體大小現在應該與預覽完全一致。")
         st.download_button("📥 下載 PDF", data=pdf_out.getvalue(), file_name="tickets_final.pdf")
+
