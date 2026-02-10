@@ -4,8 +4,8 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 import os
 
-st.set_page_config(page_title="萬用抽獎券生成器 V6", layout="wide")
-st.title("🎟️ 萬用抽獎券生成器 V6 (解析度同步修正版)")
+st.set_page_config(page_title="萬用抽獎券生成器", layout="wide")
+st.title("🎟️ 萬用抽獎券生成器")
 
 # --- 側邊欄設定 ---
 with st.sidebar:
@@ -116,5 +116,6 @@ if bg_file and data_file:
         pages[0].save(pdf_out, format="PDF", save_all=True, append_images=pages[1:])
         st.success("✅ 完成！PDF 字體大小現在應該與預覽完全一致。")
         st.download_button("📥 下載 PDF", data=pdf_out.getvalue(), file_name="tickets_final.pdf")
+
 
 
